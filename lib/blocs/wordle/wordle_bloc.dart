@@ -25,7 +25,8 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
     emit(
       WordleLoaded(
         solution: event.solution,
-        dictionary: dictionary.split('\n'),
+        dictionary:
+            dictionary.split('\n').map((word) => word.toLowerCase()).toList(),
         guesses: Word.guesses,
       ),
     );
