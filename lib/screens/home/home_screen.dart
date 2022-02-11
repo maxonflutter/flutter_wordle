@@ -9,7 +9,6 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: _buildAppBar(context),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildBoard(),

@@ -12,10 +12,7 @@ class Word extends Equatable {
 
   @override
   List<Object?> get props {
-    return [
-      id,
-      letters,
-    ];
+    return [id, letters];
   }
 
   Word copyWith({
