@@ -35,16 +35,16 @@ class CustomKey extends StatelessWidget {
       width: 45,
       height: 45,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5.0),
-          color: color,
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).colorScheme.secondary,
-              blurRadius: 1,
-              spreadRadius: 1,
-              // offset: const Offset(1, 1),
-            ),
-          ]),
+        borderRadius: BorderRadius.circular(5.0),
+        color: color,
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.secondary,
+            blurRadius: 1,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
       margin: const EdgeInsets.all(4.0),
       child: InkWell(
         onTap: onTap,

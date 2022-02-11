@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_wordle/models/models.dart';
+import '/models/models.dart';
 import '/blocs/blocs.dart';
 import '/widgets/widgets.dart';
 

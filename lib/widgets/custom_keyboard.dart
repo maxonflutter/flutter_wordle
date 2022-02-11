@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_wordle/blocs/blocs.dart';
-import 'package:flutter_wordle/models/models.dart';
-import 'package:flutter_wordle/widgets/custom_key.dart';
+import '/blocs/blocs.dart';
+import '/models/models.dart';
+import '/widgets/custom_key.dart';
 
 class CustomKeyboard extends StatelessWidget {
   const CustomKeyboard({Key? key}) : super(key: key);

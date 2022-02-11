@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_wordle/models/models.dart';
+import '/models/models.dart';
 
 class Word extends Equatable {
   final int? id;
