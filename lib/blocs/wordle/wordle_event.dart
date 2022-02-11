@@ -18,11 +18,15 @@ class LoadGame extends WordleEvent {
 
 class UpdateGuess extends WordleEvent {
   final Word word;
+  final bool isBackArrow;
 
-  const UpdateGuess({required this.word});
+  const UpdateGuess({
+    required this.word,
+    this.isBackArrow = false,
+  });
 
   @override
-  List<Object> get props => [word];
+  List<Object> get props => [word, isBackArrow];
 }
 
 class ValidateGuess extends WordleEvent {

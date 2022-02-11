@@ -10,78 +10,98 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('WORDLE'),
-      ),
-      body: BlocBuilder<WordleBloc, WordleState>(
+      appBar: _buildAppBar(context),
+      body: BlocConsumer<WordleBloc, WordleState>(
+        listenWhen: (previous, current) {
+          if (current is WordleLoaded) {
+            return current.isNotInDictionary;
+          }
+          return false;
+        },
+        listener: (context, state) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Word not in the dictionary'),
+              duration: Duration(seconds: 1),
+            ),
+          );
+        },
         builder: (context, state) {
           if (state is WordleLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             );
           }
           if (state is WordleLoaded) {
-            return Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    height: 400,
-                    width: 300,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 5,
-                      ),
-                      itemCount: 30,
-                      itemBuilder: (BuildContext context, int index) {
-                        List<Letter?> letters =
-                            state.guesses[(index / 5).floor()].letters;
-
-                        int letterCount = letters
-                            .where((letter) => letter != null)
-                            .toList()
-                            .length;
-
-                        int wordIndex = index % 5;
-                        return Container(
-                          margin: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.blue,
-                              width: 2,
-                            ),
-                          ),
-                          child: Center(
-                            child: (letterCount > wordIndex)
-                                ? Text(letters[wordIndex]!.letter)
-                                : const Text(''),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                  // ListView.builder(
-                  //   shrinkWrap: true,
-                  //   itemCount: state.Wordle.length,
-                  //   itemBuilder: (BuildContext context, int index) {
-                  //     return Text(state.Wordle[index]);
-                  //   },
-                  // ),
-                  const CustomKeyboard(),
-                ],
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildBoard(state),
+                const SizedBox(height: 50),
+                const CustomKeyboard(),
+              ],
+            );
+          }
+          if (state is WordleSolved) {
+            return Center(
+              child: Text(
+                'Congrats, you won!',
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
             );
           } else {
             return const Text('Something went wrong.');
           }
         },
+      ),
+    );
+  }
+
+  Container _buildBoard(WordleLoaded state) {
+    return Container(
+      margin: const EdgeInsets.all(10),
+      height: 400,
+      width: 300,
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 5,
+        ),
+        itemCount: 30,
+        itemBuilder: (BuildContext context, int index) {
+          // Get all the letters in a word.
+          List<Letter?> letters = state.guesses[(index / 5).floor()].letters;
+          // Count the number of letters in the selected word.
+          int letterCount =
+              letters.where((letter) => letter != null).toList().length;
+          // For each letter, get the index (the position in the word).
+          int letterIndex = index % 5;
+
+          return CustomBoardTile(
+            letters: letters,
+            letterCount: letterCount,
+            letterIndex: letterIndex,
+          );
+        },
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        'Another Word Game',
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.secondary,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

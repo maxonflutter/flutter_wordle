@@ -15,97 +15,158 @@ class CustomKeyboard extends StatelessWidget {
 
     return BlocBuilder<WordleBloc, WordleState>(
       builder: (context, state) {
-        return Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ...firstRow.map(
-                  (letter) => CustomKey(
-                    text: letter,
-                    onTap: () {
-                      var wordIndex =
-                          ((state as WordleLoaded).letterCount / 5).floor();
-                      var letterIndex = state.letterCount % 5;
+        if (state is WordleLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (state is WordleLoaded) {
+          var letters = state.guesses
+              .expand((element) => element.letters)
+              .where((element) => element != null)
+              .toSet();
 
-                      var letters = state.guesses[wordIndex].letters;
+          return Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ...firstRow.map(
+                    (letter) => CustomKey(
+                      text: letter,
+                      evaluation: letters,
+                      onTap: () {
+                        var wordIndex = (state.letterCount / 5).floor();
+                        var letterIndex = state.letterCount % 5;
+                        var letters = state.guesses[wordIndex].letters;
 
-                      letters[letterIndex] = Letter(
-                        id: state.letterCount,
-                        letter: letter,
-                      );
+                        letters[letterIndex] = Letter(
+                          id: state.letterCount,
+                          letter: letter,
+                          evaluation: Evaluation.pending,
+                        );
 
-                      var updatedWord =
-                          state.guesses[wordIndex].copyWith(letters: letters);
+                        var updatedWord =
+                            state.guesses[wordIndex].copyWith(letters: letters);
 
-                      context.read<WordleBloc>().add(
-                            UpdateGuess(word: updatedWord),
-                          );
-                    },
+                        context.read<WordleBloc>().add(
+                              UpdateGuess(word: updatedWord),
+                            );
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ...secondRow.map(
-                  (letter) => CustomKey(
-                    text: letter,
-                    onTap: () {
-                      var wordIndex =
-                          ((state as WordleLoaded).letterCount / 5).floor();
-                      var letterIndex = state.letterCount % 5;
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ...secondRow.map(
+                    (letter) => CustomKey(
+                      text: letter,
+                      evaluation: letters,
+                      onTap: () {
+                        var wordIndex = (state.letterCount / 5).floor();
+                        var letterIndex = state.letterCount % 5;
+                        var letters = state.guesses[wordIndex].letters;
 
-                      var letters = state.guesses[wordIndex].letters;
+                        letters[letterIndex] = Letter(
+                          id: state.letterCount,
+                          letter: letter,
+                          evaluation: Evaluation.pending,
+                        );
 
-                      letters[letterIndex] = Letter(
-                        id: state.letterCount,
-                        letter: letter,
-                      );
+                        var updatedWord =
+                            state.guesses[wordIndex].copyWith(letters: letters);
 
-                      var updatedWord =
-                          state.guesses[wordIndex].copyWith(letters: letters);
-
-                      context.read<WordleBloc>().add(
-                            UpdateGuess(word: updatedWord),
-                          );
-                    },
+                        context.read<WordleBloc>().add(
+                              UpdateGuess(word: updatedWord),
+                            );
+                      },
+                    ),
                   ),
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ...thirdRow.map(
-                  (letter) => CustomKey(
-                    text: letter,
-                    onTap: () {
-                      var wordIndex =
-                          ((state as WordleLoaded).letterCount / 5).floor();
-                      var letterIndex = state.letterCount % 5;
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ...thirdRow.map(
+                    (letter) => CustomKey(
+                      text: letter,
+                      evaluation: letters,
+                      onTap: () {
+                        var wordIndex = (state.letterCount / 5).floor();
+                        var letterIndex = state.letterCount % 5;
+                        var letters = state.guesses[wordIndex].letters;
 
-                      var letters = state.guesses[wordIndex].letters;
+                        letters[letterIndex] = Letter(
+                          id: state.letterCount,
+                          letter: letter,
+                          evaluation: Evaluation.pending,
+                        );
 
-                      letters[letterIndex] = Letter(
-                        id: state.letterCount,
-                        letter: letter,
-                      );
+                        var updatedWord =
+                            state.guesses[wordIndex].copyWith(letters: letters);
 
-                      var updatedWord =
-                          state.guesses[wordIndex].copyWith(letters: letters);
-
-                      context.read<WordleBloc>().add(
-                            UpdateGuess(word: updatedWord),
-                          );
-                    },
+                        context.read<WordleBloc>().add(
+                              UpdateGuess(word: updatedWord),
+                            );
+                      },
+                    ),
                   ),
-                )
-              ],
-            ),
-          ],
-        );
+                  Container(
+                    width: 90,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      color: Colors.transparent,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.secondary,
+                          blurRadius: 1,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    margin: const EdgeInsets.all(4.0),
+                    child: InkWell(
+                      onTap: () {
+                        if (state.letterCount % 5 != 0) {
+                          var wordIndex = (state.letterCount / 5).floor();
+                          var letterIndex = (state.letterCount - 1) % 5;
+                          var letters = state.guesses[wordIndex].letters;
+
+                          letters.removeAt(letterIndex);
+                          letters.add(null);
+
+                          var updatedWord = state.guesses[wordIndex]
+                              .copyWith(letters: letters);
+
+                          context.read<WordleBloc>().add(
+                                UpdateGuess(
+                                  word: updatedWord,
+                                  isBackArrow: true,
+                                ),
+                              );
+                        }
+                      },
+                      child: Center(
+                        child: Text(
+                          'Back',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        } else {
+          return const Text('Something went wrong.');
+        }
       },
     );
   }

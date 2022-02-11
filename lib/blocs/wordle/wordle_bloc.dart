@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -27,25 +25,7 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
     emit(
       WordleLoaded(
         solution: event.solution,
-        dictionary: dictionary
-            .split('\n')
-            .asMap()
-            .entries
-            .map(
-              (word) => Word(
-                id: word.key,
-                letters: word.value
-                    .split('')
-                    .map(
-                      (e) => Letter(
-                        id: 1000 + Random().nextInt(10000),
-                        letter: e,
-                      ),
-                    )
-                    .toList(),
-              ),
-            )
-            .toList(),
+        dictionary: dictionary.split('\n'),
         guesses: Word.guesses,
       ),
     );
@@ -57,7 +37,15 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
   ) {
     final state = this.state;
     if (state is WordleLoaded) {
-      int letterCount = state.letterCount + 1;
+      int letterCount;
+      switch (event.isBackArrow) {
+        case true:
+          letterCount = state.letterCount - 1;
+          break;
+        default:
+          letterCount = state.letterCount + 1;
+      }
+
       List<Word> guesses = (state.guesses.map((word) {
         return word.id == event.word.id ? event.word : word;
       })).toList();
@@ -71,11 +59,35 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
         ),
       );
 
-      if (letterCount % 5 == 0) {
-        print('Validating ${event.word}');
-        add(
-          ValidateGuess(word: event.word),
-        );
+      if (letterCount % 5 == 0 && !event.isBackArrow) {
+        if (state.dictionary.contains(
+          event.word.letters
+              .map((letter) => letter!.letter)
+              .join()
+              .toLowerCase(),
+        )) {
+          add(
+            ValidateGuess(word: event.word),
+          );
+        } else {
+          List<Word> guesses = (state.guesses.map((word) {
+            return word.id == event.word.id
+                ? Word(
+                    id: event.word.id,
+                    letters: List.generate(5, (index) => null))
+                : word;
+          })).toList();
+
+          emit(
+            WordleLoaded(
+              solution: state.solution,
+              dictionary: state.dictionary,
+              guesses: guesses,
+              letterCount: letterCount - 5,
+              isNotInDictionary: true,
+            ),
+          );
+        }
       }
     }
   }
@@ -86,25 +98,50 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
   ) {
     final state = this.state;
     if (state is WordleLoaded) {
-      Word solution = state.solution;
+      List<String> solution =
+          state.solution.letters.map((letter) => letter!.letter).toList();
+      List<String> guess =
+          event.word.letters.map((letter) => letter!.letter).toList();
+      List<Letter?> letters = event.word.letters;
 
-      var missing = [];
-      var present = [];
-      var correct = [];
+      var evaluation = [];
 
-      if (identical(solution, event.word.letters)) {
-        // You win
-        print('You win');
+      if (listEquals(solution, guess)) {
+        emit(WordleSolved());
       } else {
-        event.word.letters.asMap().forEach((index, value) {
-          if (identical(value, solution.letters[index])) correct.add(value);
-          if (solution.letters.contains(value)) present.add(value);
-          if (!solution.letters.contains(value)) missing.add(value);
-        });
+        guess.asMap().forEach(
+          (index, value) {
+            if (identical(guess[index], solution[index])) {
+              evaluation.add(Evaluation.correct);
+              letters[index] = letters[index]!.copyWith(
+                evaluation: Evaluation.correct,
+              );
+            } else if (solution.contains(guess[index])) {
+              evaluation.add(Evaluation.present);
+              letters[index] = letters[index]!.copyWith(
+                evaluation: Evaluation.present,
+              );
+            } else {
+              evaluation.add(Evaluation.missing);
+              letters[index] = letters[index]!.copyWith(
+                evaluation: Evaluation.missing,
+              );
+            }
+          },
+        );
+        List<Word> validatedGuesses = state.guesses.map((guess) {
+          return guess.id == event.word.id ? event.word : guess;
+        }).toList();
+
+        emit(
+          WordleLoaded(
+            dictionary: state.dictionary,
+            solution: state.solution,
+            guesses: validatedGuesses,
+            letterCount: state.letterCount,
+          ),
+        );
       }
-      print(missing);
-      print(present);
-      print(correct);
     }
   }
 }
