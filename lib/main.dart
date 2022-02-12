@@ -13,23 +13,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => WordleBloc()
-            ..add(
-              const LoadGame(
-                solution: Word(letters: <Letter>[
-                  Letter(letter: 'G', evaluation: Evaluation.correct),
-                  Letter(letter: 'A', evaluation: Evaluation.correct),
-                  Letter(letter: 'M', evaluation: Evaluation.correct),
-                  Letter(letter: 'E', evaluation: Evaluation.correct),
-                  Letter(letter: 'S', evaluation: Evaluation.correct),
-                ]),
-              ),
-            ),
+    return BlocProvider(
+      create: (context) => WordleBloc()
+        ..add(
+          const LoadGame(
+            solution: Word(letters: <Letter>[
+              Letter(letter: 'G', evaluation: Evaluation.correct),
+              Letter(letter: 'A', evaluation: Evaluation.correct),
+              Letter(letter: 'M', evaluation: Evaluation.correct),
+              Letter(letter: 'E', evaluation: Evaluation.correct),
+              Letter(letter: 'S', evaluation: Evaluation.correct),
+            ]),
+          ),
         ),
-      ],
       child: MaterialApp(
         title: 'Another Word Game',
         theme: ThemeData(
