@@ -18,7 +18,6 @@ class CustomKeyboard extends StatelessWidget {
             ...firstRow.map(
               (letter) => CustomKey(
                 text: letter,
-                // evaluation: letters,
                 onTap: () {},
               ),
             ),
@@ -30,7 +29,6 @@ class CustomKeyboard extends StatelessWidget {
             ...secondRow.map(
               (letter) => CustomKey(
                 text: letter,
-                // evaluation: letters,
                 onTap: () {},
               ),
             ),
@@ -42,7 +40,6 @@ class CustomKeyboard extends StatelessWidget {
             ...thirdRow.map(
               (letter) => CustomKey(
                 text: letter,
-                // evaluation: letters,
                 onTap: () {},
               ),
             ),
