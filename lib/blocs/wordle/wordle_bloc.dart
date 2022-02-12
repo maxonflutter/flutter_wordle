@@ -105,25 +105,20 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
           event.word.letters.map((letter) => letter!.letter).toList();
       List<Letter?> letters = event.word.letters;
 
-      var evaluation = [];
-
       if (listEquals(solution, guess)) {
         emit(WordleSolved());
       } else {
         guess.asMap().forEach(
           (index, value) {
             if (identical(guess[index], solution[index])) {
-              evaluation.add(Evaluation.correct);
               letters[index] = letters[index]!.copyWith(
                 evaluation: Evaluation.correct,
               );
             } else if (solution.contains(guess[index])) {
-              evaluation.add(Evaluation.present);
               letters[index] = letters[index]!.copyWith(
                 evaluation: Evaluation.present,
               );
             } else {
-              evaluation.add(Evaluation.missing);
               letters[index] = letters[index]!.copyWith(
                 evaluation: Evaluation.missing,
               );
