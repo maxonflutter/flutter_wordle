@@ -28,11 +28,11 @@ class Letter extends Equatable {
     );
   }
 
-  static List<Letter> letters = const [
-    Letter(
-      id: 0,
-      letter: 'A',
-      evaluation: Evaluation.pending,
-    ),
-  ];
+  // static List<Letter> letters = const [
+  //   Letter(
+  //     id: 0,
+  //     letter: 'A',
+  //     evaluation: Evaluation.pending,
+  //   ),
+  // ];
 }
